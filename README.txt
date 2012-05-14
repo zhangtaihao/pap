@@ -17,8 +17,7 @@ factory for initializing an application.
 ------------------------
 The default framework requires the following components to function:
 
- - Apache 2
- - Apache mod_rewrite
+ - Web server (e.g. Apache)
  - PHP 5
  - PHP extensions
    - SPL (on by default, always on in PHP 5.3)
