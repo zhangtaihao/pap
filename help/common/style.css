@@ -1,0 +1,10 @@
+@charset "UTF-8";
+
+/* Reset styles. */
+@import url('reset.css');
+
+/* General body styles. */
+body {
+  font-size: 12px;
+  font-family: Georgia, "Times New Roman", Times, serif;
+}

@@ -1,0 +1,1 @@
+This folder contains example configuration to set up core components.
