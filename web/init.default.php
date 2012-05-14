@@ -11,20 +11,6 @@ if (!defined('PLATFORM_ROOT')) {
   define('PLATFORM_ROOT', realpath(dirname(__FILE__) . '/..'));
 }
 
-if (!defined('APP_ROOT')) {
-  /**
-   * Application code directory.
-   */
-  define('APP_ROOT', PLATFORM_ROOT . '/app');
-}
-
-if (!defined('CONF_ROOT')) {
-  /**
-   * Configuration directory.
-   */
-  define('CONF_ROOT', PLATFORM_ROOT . '/conf');
-}
-
 if (!defined('LIB_ROOT')) {
   /**
    * Libraries directory.
@@ -41,4 +27,18 @@ if (!defined('WEB_ROOT')) {
    * Web directory.
    */
   define('WEB_ROOT', PLATFORM_ROOT . '/web');
+}
+
+if (!defined('APP_ROOT')) {
+  /**
+   * Main application code directory.
+   */
+  define('APP_ROOT', PLATFORM_ROOT . '/app');
+}
+
+if (!defined('CONF_ROOT')) {
+  /**
+   * Main configuration directory.
+   */
+  define('CONF_ROOT', PLATFORM_ROOT . '/conf');
 }
