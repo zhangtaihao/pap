@@ -18,7 +18,7 @@ factory for initializing an application.
 The default framework requires the following components to function:
 
  - Web server (e.g. Apache)
- - PHP 5
+ - PHP 5.2 or later
  - PHP extensions
    - SPL (on by default, always on in PHP 5.3)
 
