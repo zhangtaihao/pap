@@ -57,8 +57,20 @@ final class Cache {
   }
 
   /**
-   * Gets an instance of
+   * Pre-initialization cache provider.
+   * @var CacheProvider
    */
+  static protected $cache;
+
+  /**
+   * Sets the pre-initialization cache provider.
+   *
+   * @param CacheProvider $cache
+   *   Cache provider.
+   */
+  static public function setInitCache($cache) {
+    self::$cache = $cache;
+  }
 }
 
 /**
