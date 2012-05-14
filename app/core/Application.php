@@ -5,9 +5,9 @@
  */
 
 /**
- * Main application handler.
+ * Main application controller.
  */
-final class MainApplication {
+final class Application {
   /**
    * Prevents this class from being instantiated.
    */
@@ -25,7 +25,7 @@ final class MainApplication {
    *   If specified, the application code root directory. Otherwise, the
    *   constant APP_ROOT is used.
    */
-  static public function start($handler, $confRoot = NULL, $appRoot = NULL) {
+  static public function run($handler, $confRoot = NULL, $appRoot = NULL) {
     // Check arguments.
     if (isset($confRoot) && (!file_exists($confRoot) || !is_dir($confRoot))) {
       throw new InvalidArgumentException('Specified configuration root is not a valid directory.');
@@ -51,7 +51,7 @@ final class MainApplication {
     ));
 
     // Start application.
-    $application = new Application($handler, $context);
+    $application = new ApplicationHandler($handler, $context);
     $application->run();
   }
 }
@@ -59,7 +59,7 @@ final class MainApplication {
 /**
  * Generic application handler.
  */
-class Application {
+class ApplicationHandler {
   /**
    * Application context.
    * @var ApplicationContext
