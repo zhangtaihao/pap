@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Core package manifest.
+-->
+<manifest>
+  <class-registry>
+    <file>
+      <name>Application.php</name>
+      <classes>
+        <class>Application</class>
+      </classes>
+    </file>
+    <file>
+      <name>Cache.php</name>
+      <classes>
+        <class>Cache</class>
+        <class>CacheBin</class>
+        <class>CacheProvider</class>
+        <class>AbstractCacheProvider</class>
+        <class>NullCacheProvider</class>
+      </classes>
+    </file>
+    <file>
+      <name>Configuration.php</name>
+      <classes>
+        <class>Configuration</class>
+        <class>Configurable</class>
+        <class>ConfigurationException</class>
+        <class>ConfigurationFormatException</class>
+        <class>InvalidConfigurationException</class>
+      </classes>
+    </file>
+  </class-registry>
+</manifest>
