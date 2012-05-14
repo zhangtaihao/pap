@@ -4,8 +4,13 @@
 Author: Taihao Zhang
 Email: jason@zth.me
 
-The Pap framework is a PHP application framework for building web applications
-oriented towards
+The Pap framework is a PHP application framework for building configurable &
+easily deployed web applications. This system intentionally only provides an
+application handler architecture, without any external database libraries, so
+that the application has no unnecessary dependencies. It is the responsibility
+of the result application to specify how to define the configuration, beyond a
+basic XML configuration structure to leverage the built-in automatic object
+factory for initializing an application.
 
 
  System requirements
