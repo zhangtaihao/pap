@@ -19,7 +19,7 @@ if (!defined('LIB_ROOT')) {
 }
 if (is_dir(LIB_ROOT)) {
   // Set up libraries for include.
-  ini_set('include_path', ini_get('include_path') . ':' . LIB_ROOT);
+  ini_set('include_path', ini_get('include_path') . PATH_SEPARATOR . LIB_ROOT);
 }
 
 if (!defined('WEB_ROOT')) {
