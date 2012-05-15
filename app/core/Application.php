@@ -113,7 +113,7 @@ class Application {
    * Sets up the application components.
    */
   protected function setUp() {
-    // TODO Set up application cache.
+    // Load the cache API for setup.
     require_once APP_ROOT . '/core/Cache.php';
 
     // TODO Set up application loader.
@@ -169,7 +169,7 @@ class Application {
 }
 
 /**
- * Registry for objects used alongside the application.
+ * Store for objects used alongside the application.
  */
 class ApplicationStore {
   /**
@@ -346,33 +346,25 @@ class ApplicationHandler {
 }
 
 /**
- * Application class loader.
+ * Application registry and class loader.
  */
-class ApplicationLoader {
-  /**
-   * Application root.
-   * @var string
-   */
-  protected $appRoot;
-
+class ApplicationRegistry {
   /**
    * Constructs this loader for a given application root.
-   *
-   * @param string $appRoot
-   *   Directory path to the application root.
    */
-  public function __construct($appRoot) {
-    $this->appRoot = $appRoot;
-    $this->initialize();
+  public function __construct() {
+    // Load class registry.
+    $this->loadRegistry();
+
+    // Register this loader.
+    spl_autoload_register(array($this, 'autoload'));
   }
 
   /**
-   * Initializes this loader.
+   * Loads the class registry.
    */
-  protected function initialize() {
-    // TODO Load class registry.
-    // Register this loader.
-    spl_autoload_register(array($this, 'autoload'));
+  protected function loadRegistry() {
+    // TODO
   }
 
   /**
@@ -387,7 +379,7 @@ class ApplicationLoader {
   /**
    * Finalizes this loader.
    */
-  public function shutdown() {
+  public function __destruct() {
     spl_autoload_unregister(array($this, 'autoload'));
   }
 }
