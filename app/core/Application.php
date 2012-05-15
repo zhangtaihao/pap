@@ -43,16 +43,16 @@ class Application {
   }
 
   /**
-   * Application handler.
-   * @var ApplicationHandler
-   */
-  protected $handler;
-
-  /**
    * Application-related contexts.
    * @var array
    */
   protected $contexts;
+
+  /**
+   * Application object store.
+   * @var ApplicationStore
+   */
+  protected $store;
 
   /**
    * Constructs an application with the given handler.
@@ -61,9 +61,18 @@ class Application {
    *   Name of the handler to run.
    */
   protected function __construct($handler) {
-    // Construct application context.
+    $this->contexts = array();
+    $this->store = new ApplicationStore($this);
+
+    // Initialize application context.
     $context = new ApplicationContext($this, $handler);
     $this->addContext($context);
+  }
+
+  /**
+   * Sets up the application.
+   */
+  protected function setUp() {
     // TODO Set up critical application components.
     // TODO Set up application handler.
     //$application = new ApplicationHandler($handler, $context);
@@ -92,6 +101,16 @@ class Application {
   }
 
   /**
+   * Gets the application store.
+   *
+   * @return ApplicationStore
+   *   Application store.
+   */
+  public function getStore() {
+    return $this->store;
+  }
+
+  /**
    * Starts the main application.
    *
    * @param string $handler
@@ -100,6 +119,60 @@ class Application {
   public function run() {
     // TODO Start application.
     //$application->run();
+  }
+}
+
+/**
+ * Registry for objects used alongside the application.
+ */
+class ApplicationStore {
+  /**
+   * Owner application
+   * @var Application
+   */
+  protected $application;
+
+  /**
+   * Object store array.
+   * @var array
+   */
+  protected $store;
+
+  /**
+   * Constructs a store.
+   *
+   * @param Application $owner
+   *   Owner of this store.
+   */
+  public function __construct(Application $owner) {
+    $this->application = $owner;
+    $this->store = array();
+  }
+
+  /**
+   * Stores an object given a name, if it does not already exist.
+   *
+   * @param string $name
+   *   Name to store the object with.
+   * @param object $object
+   *   The object to store.
+   */
+  public function store($name, $object) {
+    if (!isset($this->store[$name])) {
+      $this->store[$name] = $object;
+    }
+  }
+
+  /**
+   * Retrieves an object by looking up its name.
+   *
+   * @param string $name
+   *   Name to look up.
+   * @return object
+   *   Object stored with the given name.
+   */
+  public function lookup($name) {
+    return isset($this->store[$name]) ? $this->store[$name] : NULL;
   }
 }
 
