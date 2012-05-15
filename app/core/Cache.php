@@ -5,13 +5,39 @@
  */
 
 /**
- * Base cache handler.
+ * Default cache controller delegate.
  */
 final class Cache {
   /**
    * Prevents this class from instantiating.
    */
   private function __construct() {}
+
+  /**
+   * Cache controller instance.
+   * @var CacheController
+   */
+  private static $controller;
+
+  /**
+   * Gets the encapsulated cache controller.
+   */
+  public static function getController() {
+    if (!isset(self::$controller)) {
+      self::$controller = new CacheController();
+    }
+    return self::$controller;
+  }
+
+  /**
+   * Delegates a method call to the controller.
+   */
+  private static function delegateController($bin, $method, array $arguments = array()) {
+    $controller = self::getController();
+    if ($cache = $controller->getCache($bin)) {
+      return call_user_func_array(array($cache, $method), $arguments);
+    }
+  }
 
   /**
    * Gets a cached value.
@@ -24,7 +50,7 @@ final class Cache {
    *   Cached value.
    */
   public static function get($cid, $bin = 'default') {
-    // TODO
+    self::delegateController($bin, __FUNCTION__, array($cid));
   }
 
   /**
@@ -41,7 +67,10 @@ final class Cache {
    *   effect depending on the actual cache provider.
    */
   public static function set($cid, $value, $bin = 'default', $commit = FALSE) {
-    // TODO
+    self::delegateController($bin, __FUNCTION__, array($cid));
+    if ($commit) {
+      self::delegateController($bin, 'commit');
+    }
   }
 
   /**
@@ -53,38 +82,88 @@ final class Cache {
    *   Cache bin name.
    */
   public static function clear($cid = NULL, $bin = 'default') {
-    // TODO
+    self::delegateController($bin, __FUNCTION__, array($cid));
+  }
+}
+
+/**
+ * Bin-based cache controller.
+ */
+class CacheController {
+  /**
+   * Cache bin registry.
+   * @var array
+   */
+  protected $caches = array();
+
+  /**
+   * Registers cache handler to a bin.
+   *
+   * @param CacheProvider $cache
+   *   Cache handler instance.
+   * @param string $bin
+   *   Name of the bin.
+   * @param bool $override
+   *   Whether to override any existing cache.
+   */
+  public function registerCache(CacheProvider $cache, $bin, $override = FALSE) {
+    if (!isset($this->caches[$bin]) || $override) {
+      $this->caches[$bin] = $cache;
+    }
   }
 
   /**
-   * Pre-initialization cache provider.
-   * @var CacheProvider
+   * Retrieves the registered cache handler.
+   *
+   * @param string $bin
+   *   Name of the bin to retrieve for.
+   * @param bool $alwaysReturnCache
+   *   Always return an object. If no cache is registered against the specified
+   *   bin, an instance of NullCacheProvider is returned.
+   * @return CacheProvider
+   *   Registered cache handler, or NULL if none registered and
+   *   $alwaysReturnCache is FALSE.
    */
-  static protected $cache;
+  public function getCache($bin, $alwaysReturnCache = FALSE) {
+    // Return the registered cache.
+    if (isset($this->caches[$bin])) {
+      return $this->caches[$bin];
+    }
+    // Return a null cache.
+    elseif ($alwaysReturnCache) {
+      return self::getNullCache();
+    }
+  }
 
   /**
-   * Sets the pre-initialization cache provider.
+   * Creates and returns a single instance of NullCacheProvider.
    *
-   * @param CacheProvider $cache
-   *   Cache provider.
+   * @return NullCacheProvider
+   *   Null cache handler.
    */
-  static public function setInitCache($cache) {
-    self::$cache = $cache;
+  protected static function getNullCache() {
+    static $instance;
+    if (!isset($instance)) {
+      $instance = new NullCacheProvider();
+    }
+    return $instance;
   }
 }
 
 /**
  * Bin-based cache factory.
  */
-class CacheBin implements Configurable {
+class CacheFactory implements Configurable {
   /**
-   * Gets an XPath expression to match cache bin configuration.
+   * Gets XPath expressions to match cache bin configuration.
    *
    * @return string
    *   XPath expression.
    */
   public function getXPaths() {
-    // TODO: Implement getXPath() method.
+    return array(
+      '/application/cache',
+    );
   }
 
   /**
