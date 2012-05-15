@@ -4,8 +4,8 @@
  * Caching API tests.
  */
 
-require_once 'core/Configuration.php';
-require_once 'core/Cache.php';
+require_once APP_ROOT . '/core/Configuration.php';
+require_once APP_ROOT . '/core/Cache.php';
 
 /**
  * Cache controller tests.
