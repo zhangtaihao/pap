@@ -43,16 +43,52 @@ class Application {
   }
 
   /**
+   * Application handler.
+   * @var ApplicationHandler
+   */
+  protected $handler;
+
+  /**
+   * Application-related contexts.
+   * @var array
+   */
+  protected $contexts;
+
+  /**
    * Constructs an application with the given handler.
    *
    * @param string $handler
    *   Name of the handler to run.
    */
   protected function __construct($handler) {
-    // TODO Construct application context.
+    // Construct application context.
+    $context = new ApplicationContext($this, $handler);
+    $this->addContext($context);
     // TODO Set up critical application components.
     // TODO Set up application handler.
     //$application = new ApplicationHandler($handler, $context);
+  }
+
+  /**
+   * Adds a context object to this application.
+   *
+   * @param Context $context
+   *   Context object.
+   */
+  public function addContext(Context $context) {
+    $this->contexts[$context->getContextName()] = $context;
+  }
+
+  /**
+   * Retrieves a context given its name.
+   *
+   * @param string $name
+   *   Name of the context.
+   * @return Context
+   *   Context object, or NULL if none found with the given name.
+   */
+  public function getContext($name) {
+    return isset($this->contexts[$name]) ? $this->contexts[$name] : NULL;
   }
 
   /**
@@ -64,6 +100,83 @@ class Application {
   public function run() {
     // TODO Start application.
     //$application->run();
+  }
+}
+
+/**
+ * Abstract base class for contexts.
+ */
+abstract class Context {
+  /**
+   * Gets a name of the context class for context registry.
+   *
+   * @return string
+   *   Context name.
+   */
+  abstract public function getContextName();
+}
+
+/**
+ * Application context containing initialization-time information.
+ */
+class ApplicationContext extends Context {
+  /**
+   * Application associated with this context.
+   * @var Application
+   */
+  protected $application;
+
+  /**
+   * Application handler name.
+   * @var string
+   */
+  protected $handler;
+
+  /**
+   * Constructs this application context.
+   *
+   * @param Application $context
+   *   The owner of this application context.
+   */
+  public function __construct(Application $owner, $handler) {
+    $this->application = $owner;
+    $this->handler = $handler;
+    $this->setUpEnvironment();
+  }
+
+  /**
+   * Sets up environment variables.
+   */
+  protected function setUpEnvironment() {}
+
+  /**
+   * Gets a name of the context class for context registry.
+   *
+   * @return string
+   *   Context name.
+   */
+  public function getContextName() {
+    return 'application';
+  }
+
+  /**
+   * Gets the associated application.
+   *
+   * @return Application
+   *   Application object.
+   */
+  public function getApplication() {
+    return $this->application;
+  }
+
+  /**
+   * Gets the application handler name.
+   *
+   * @return string
+   *   Name of the handler.
+   */
+  public function getHandler() {
+    return $this->handler;
   }
 }
 
@@ -102,83 +215,6 @@ class ApplicationHandler {
    */
   public function run() {
     // TODO
-  }
-}
-
-/**
- * Abstract base class for contexts.
- */
-abstract class Context {
-  /**
-   * Gets a name of the context class for context registry.
-   *
-   * @return string
-   *   Context name.
-   */
-  abstract public function getContextName();
-}
-
-/**
- * Read-only application context. Context properties are accessed as object
- * attributes. This context provides the following properties:
- *
- * - platformRoot: Platform root directory.
- * - webRoot: Web documents directory.
- * - appRoot: Application root directory.
- * - confRoot: Configuration directory.
- */
-class ApplicationContext extends Context {
-  /**
-   * Context properties.
-   * @var array
-   */
-  protected $properties;
-
-  /**
-   * Constructs this context object.
-   *
-   * @param array $properties
-   *   Array of properties to initialize the context with.
-   */
-  public function __construct(array $properties) {
-    $this->properties = array();
-    foreach ($this->getPropertyKeys() as $key) {
-      if (isset($properties[$key])) {
-        $this->properties[$key] = $properties[$key];
-      }
-      else {
-        throw new InvalidArgumentException('Missing context property: ' . $key);
-      }
-    }
-  }
-
-  /**
-   * Gets a name of the context class for context registry.
-   *
-   * @return string
-   *   Context name.
-   */
-  public function getContextName() {
-    return 'application';
-  }
-
-  /**
-   * Returns property keys to check.
-   *
-   * @return array
-   *   Keys of context property values.
-   */
-  protected function getPropertyKeys() {
-    return array('platformRoot', 'webRoot', 'appRoot', 'confRoot');
-  }
-
-  /**
-   * Magic method to get property.
-   */
-  public function __get($name) {
-    if (isset($this->properties[$name])) {
-      return $this->properties[$name];
-    }
   }
 }
 
