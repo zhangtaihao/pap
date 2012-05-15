@@ -4,6 +4,14 @@
  * Application implementation required to bootstrap a site.
  */
 
+if (!defined('DEFAULT_CONF_NAME')) {
+  /**
+   * Default configuration name.
+   * @var string
+   */
+  define('DEFAULT_CONF_NAME', 'default');
+}
+
 /**
  * Main application controller.
  */
@@ -20,13 +28,15 @@ class Application {
    *
    * @param string $handler
    *   Name of the handler of this application.
+   * @param string $confName
+   *   Name of the configuration to load.
    * @return Application
    *   Initialized application, ready to run.
    */
-  public static function init($handler) {
+  public static function init($handler, $confName = DEFAULT_CONF_NAME) {
     if (!isset(self::$application)) {
       // Create application.
-      $application = new Application($handler);
+      $application = new Application($handler, $confName);
       self::$application = $application;
     }
     return self::$application;
@@ -59,21 +69,31 @@ class Application {
    *
    * @param string $handler
    *   Name of the handler to run.
+   * @param string $confName
+   *   Name of the configuration to load.
    */
-  protected function __construct($handler) {
+  protected function __construct($handler, $confName) {
     $this->contexts = array();
     $this->store = new ApplicationStore($this);
 
     // Initialize application context.
-    $context = new ApplicationContext($this, $handler);
+    $context = new ApplicationContext($this, $handler, $confName);
     $this->addContext($context);
+
+    // Initialize main application components.
+    $this->setUp();
   }
 
   /**
-   * Sets up the application.
+   * Sets up the application components.
    */
   protected function setUp() {
-    // TODO Set up critical application components.
+    // TODO Set up application cache.
+
+    // TODO Set up application loader.
+
+    // TODO Set up configuration.
+
     // TODO Set up application handler.
     //$application = new ApplicationHandler($handler, $context);
   }
@@ -206,12 +226,20 @@ class ApplicationContext extends Context {
   protected $handler;
 
   /**
+   * Configuration name.
+   * @var string
+   */
+  protected $confName;
+
+  /**
    * Constructs this application context.
    *
    * @param Application $context
    *   The owner of this application context.
+   * @param string $confName
+   *   Name of the configuration to load.
    */
-  public function __construct(Application $owner, $handler) {
+  public function __construct(Application $owner, $handler, $confName) {
     $this->application = $owner;
     $this->handler = $handler;
     $this->setUpEnvironment();
