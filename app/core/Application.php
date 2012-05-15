@@ -43,6 +43,14 @@ class Application {
   }
 
   /**
+   * Initializes and runs an application. See self::init() for parameters.
+   */
+  public static function initAndRun($handler, $confName = DEFAULT_CONF_NAME) {
+    $application = self::init($handler, $confName);
+    $application->run();
+  }
+
+  /**
    * Gets the initialized application.
    *
    * @return Application
@@ -50,6 +58,23 @@ class Application {
    */
   public static function getInstance() {
     return self::$application;
+  }
+
+  /**
+   * Looks up an object from the application store.
+   *
+   * @param string $name
+   *   Name to look up.
+   * @return object
+   *   Object stored with the given name.
+   * @throws ApplicationNotInitializedException
+   *   If there is no application instance.
+   */
+  public static function lookup($name) {
+    if (!$application = self::getInstance()) {
+      throw new ApplicationNotInitializedException();
+    }
+    return $application->getStore()->lookup($name);
   }
 
   /**
@@ -89,6 +114,7 @@ class Application {
    */
   protected function setUp() {
     // TODO Set up application cache.
+    require_once APP_ROOT . '/core/Cache.php';
 
     // TODO Set up application loader.
 
@@ -365,3 +391,8 @@ class ApplicationLoader {
     spl_autoload_unregister(array($this, 'autoload'));
   }
 }
+
+/**
+ * Exception thrown because application is not initialized.
+ */
+class ApplicationNotInitializedException extends Exception {}

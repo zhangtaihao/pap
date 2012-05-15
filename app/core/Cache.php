@@ -14,19 +14,15 @@ final class Cache {
   private function __construct() {}
 
   /**
-   * Cache controller instance.
-   * @var CacheController
-   */
-  private static $controller;
-
-  /**
    * Gets the encapsulated cache controller.
    */
   public static function getController() {
-    if (!isset(self::$controller)) {
-      self::$controller = new CacheController();
+    $controller = Application::lookup('CacheController');
+    if (!isset($controller)) {
+      $controller = new CacheController();
+      Application::getInstance()->getStore()->store('CacheController', $controller);
     }
-    return self::$controller;
+    return $controller;
   }
 
   /**
