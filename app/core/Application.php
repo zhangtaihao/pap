@@ -18,36 +18,14 @@ final class Application {
    *
    * @param string $handler
    *   Name of the handler to run.
-   * @param string $confRoot
-   *   If specified, the directory containing application configuration.
-   *   Otherwise, the constant CONF_ROOT is used.
-   * @param string $appRoot
-   *   If specified, the application code root directory. Otherwise, the
-   *   constant APP_ROOT is used.
    */
-  static public function run($handler, $confRoot = NULL, $appRoot = NULL) {
-    // Check arguments.
-    if (isset($confRoot) && (!file_exists($confRoot) || !is_dir($confRoot))) {
-      throw new InvalidArgumentException('Specified configuration root is not a valid directory.');
-    }
-    if (isset($appRoot) && (!file_exists($appRoot) || !is_dir($appRoot))) {
-      throw new InvalidArgumentException('Specified application root is not a valid directory.');
-    }
-
-    // Check constants.
-    if (!isset($confRoot) && (!defined('CONF_ROOT') || !file_exists(CONF_ROOT) || !is_dir(CONF_ROOT))) {
-      throw new InvalidArgumentException('Global configuration root is not defined or is invalid.');
-    }
-    if (!isset($appRoot) && (!defined('APP_ROOT') || !file_exists(APP_ROOT) || !is_dir(APP_ROOT))) {
-      throw new InvalidArgumentException('Global application root is not defined or is invalid.');
-    }
-
+  static public function run($handler) {
     // Construct context.
     $context = new ApplicationContext(array(
       'platformRoot' => PLATFORM_ROOT,
       'webRoot' => WEB_ROOT,
-      'appRoot' => $appRoot,
-      'confRoot' => $confRoot,
+      'appRoot' => APP_ROOT,
+      'confRoot' => CONF_ROOT,
     ));
 
     // Start application.

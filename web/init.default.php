@@ -31,14 +31,14 @@ if (!defined('WEB_ROOT')) {
 
 if (!defined('APP_ROOT')) {
   /**
-   * Main application code directory.
+   * Application code directory.
    */
   define('APP_ROOT', PLATFORM_ROOT . '/app');
 }
 
 if (!defined('CONF_ROOT')) {
   /**
-   * Main configuration directory.
+   * Configuration directory.
    */
   define('CONF_ROOT', PLATFORM_ROOT . '/conf');
 }
