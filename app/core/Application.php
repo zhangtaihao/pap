@@ -113,10 +113,14 @@ class Application {
    * Sets up the application components.
    */
   protected function setUp() {
+    $store = $this->getStore();
+
     // Load the cache API for setup.
     require_once APP_ROOT . '/core/Cache.php';
 
-    // TODO Set up application loader.
+    // Set up application registry.
+    $registry = new ApplicationRegistry();
+    $store->store('ApplicationRegistry', $registry);
 
     // TODO Set up configuration.
 
@@ -193,6 +197,16 @@ class ApplicationStore {
   public function __construct(Application $owner) {
     $this->application = $owner;
     $this->store = array();
+  }
+
+  /**
+   * Gets the owner application.
+   *
+   * @return Application
+   *   Application object.
+   */
+  public function getApplication() {
+    return $this->application;
   }
 
   /**
