@@ -256,30 +256,3 @@ abstract class AbstractCacheProvider implements CacheProvider {
     $this->shutdown();
   }
 }
-
-/**
- * Cache provider that does not actually cache.
- */
-class NullCacheProvider implements CacheProvider {
-  /**
-   * Gets a cached value.
-   */
-  public function get($cid) {
-    return NULL;
-  }
-
-  /**
-   * Caches a value.
-   */
-  public function set($cid, $value) {}
-
-  /**
-   * Clears cached values.
-   */
-  public function clear($cid = NULL) {}
-
-  /**
-   * Commits cached values.
-   */
-  public function commit() {}
-}
