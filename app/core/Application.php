@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Application implementation required to bootstrap a site.
+ * Core application components required to bootstrap a request.
  */
 
 if (!defined('DEFAULT_CONF_NAME')) {
@@ -79,7 +79,7 @@ class Application {
 
   /**
    * Application-related contexts.
-   * @var array
+   * @var Context[]
    */
   protected $contexts;
 
@@ -173,7 +173,7 @@ class Application {
 }
 
 /**
- * Store for objects used alongside the application.
+ * Store for application-scope objects used during a request.
  */
 class ApplicationStore {
   /**
@@ -235,6 +235,105 @@ class ApplicationStore {
     return isset($this->store[$name]) ? $this->store[$name] : NULL;
   }
 }
+
+/**
+ * Application information container.
+ */
+class ApplicationInformation {
+  /**
+   * Information producers.
+   * @var ApplicationInformationConsumable[]
+   */
+  protected $sources;
+
+  /**
+   * Constructs an information container.
+   */
+  public function __construct() {
+    $this->sources = array();
+  }
+
+  /**
+   * Adds an information source to be processed.
+   *
+   * @param ApplicationInformationConsumable $source
+   *   Metadata source.
+   */
+  public function addSource(ApplicationInformationConsumable $source) {
+    $this->sources[] = $source;
+  }
+}
+
+/**
+ * Interface for implementing a metadata provider.
+ */
+interface ApplicationInformationConsumable {
+  /**
+   * Processes produced metadata into useful information with a consumer.
+   *
+   * @param ApplicationInformationConsumer $consumer
+   *   Metadata consumer.
+   */
+  public function process(ApplicationInformationConsumer $consumer);
+}
+
+/**
+ * Interface for consuming metadata to extract component-specific information
+ * for setting up the application.
+ */
+interface ApplicationInformationConsumer {
+  /**
+   * Consumes data for setting up data.
+   *
+   * @param array $data
+   *   Package metadata array structure.
+   */
+  public function consume(array $data);
+}
+
+/**
+ * Application registry and class loader.
+ */
+class ApplicationRegistry {
+  /**
+   * Constructs this loader for a given application root.
+   */
+  public function __construct() {
+    // Load class registry.
+    $this->loadRegistry();
+
+    // Register this loader.
+    spl_autoload_register(array($this, 'autoload'));
+  }
+
+  /**
+   * Loads the class registry.
+   */
+  protected function loadRegistry() {
+    // TODO
+  }
+
+  /**
+   * Autoloads a class.
+   *
+   * @see http://www.php.net/manual/en/function.spl-autoload.php
+   */
+  public function autoload($class) {
+    // TODO Load class.
+  }
+
+  /**
+   * Finalizes this loader.
+   */
+  public function __destruct() {
+    spl_autoload_unregister(array($this, 'autoload'));
+  }
+}
+
+/**
+ * Exception thrown because application is not initialized.
+ */
+class ApplicationNotInitializedException extends Exception {}
 
 /**
  * Abstract base class for contexts.
@@ -358,47 +457,3 @@ class ApplicationHandler {
     // TODO
   }
 }
-
-/**
- * Application registry and class loader.
- */
-class ApplicationRegistry {
-  /**
-   * Constructs this loader for a given application root.
-   */
-  public function __construct() {
-    // Load class registry.
-    $this->loadRegistry();
-
-    // Register this loader.
-    spl_autoload_register(array($this, 'autoload'));
-  }
-
-  /**
-   * Loads the class registry.
-   */
-  protected function loadRegistry() {
-    // TODO
-  }
-
-  /**
-   * Autoloads a class.
-   *
-   * @see http://www.php.net/manual/en/function.spl-autoload.php
-   */
-  public function autoload($class) {
-    // TODO Load class.
-  }
-
-  /**
-   * Finalizes this loader.
-   */
-  public function __destruct() {
-    spl_autoload_unregister(array($this, 'autoload'));
-  }
-}
-
-/**
- * Exception thrown because application is not initialized.
- */
-class ApplicationNotInitializedException extends Exception {}
