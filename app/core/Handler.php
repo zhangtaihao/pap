@@ -7,7 +7,7 @@
 /**
  * Generic application handler.
  */
-class ApplicationHandler {
+class Handler {
   /**
    * Application context.
    * @var ApplicationContext

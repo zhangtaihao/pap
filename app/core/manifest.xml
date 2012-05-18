@@ -3,35 +3,42 @@
   Core package manifest.
 -->
 <manifest>
-  <class-registry>
-    <file>
-      <name>Application.php</name>
-      <classes>
-        <class>Application</class>
-        <class>ApplicationContext</class>
-        <class>ApplicationHandler</class>
-        <class>ApplicationLoader</class>
-      </classes>
+  <registry>
+    <file path="Application.php">
+      <class>Application</class>
+      <class>DefaultApplication</class>
+      <class>Contexts</class>
+      <class>Context</class>
+      <class>ApplicationContext</class>
+      <class>ApplicationInformation</class>
+      <class>ApplicationInformationConsumable</class>
+      <class>ApplicationInformationConsumer</class>
+      <class>ApplicationRegistry</class>
+      <class>ApplicationNotInitializedException</class>
+      <class>ApplicationInitializationException</class>
     </file>
-    <file>
-      <name>Cache.php</name>
-      <classes>
-        <class>Cache</class>
-        <class>CacheBin</class>
-        <class>CacheProvider</class>
-        <class>AbstractCacheProvider</class>
-        <class>NullCacheProvider</class>
-      </classes>
+    <file path="Cache.php">
+      <class>Cache</class>
+      <class>CacheController</class>
+      <class>CacheFactory</class>
+      <class>CacheProvider</class>
+      <class>AbstractCacheProvider</class>
     </file>
-    <file>
-      <name>Configuration.php</name>
-      <classes>
-        <class>Configuration</class>
-        <class>Configurable</class>
-        <class>ConfigurationException</class>
-        <class>ConfigurationFormatException</class>
-        <class>InvalidConfigurationException</class>
-      </classes>
+    <file path="Configuration.php">
+      <class>Configuration</class>
+      <class>Configurable</class>
+      <class>ConfigurationException</class>
+      <class>ConfigurationFormatException</class>
+      <class>InvalidConfigurationException</class>
     </file>
-  </class-registry>
+    <file path="Handler.php">
+      <class>Handler</class>
+    </file>
+    <file path="Manifest.php">
+      <class>ApplicationManifests</class>
+      <class>ManifestScanner</class>
+      <class>ManifestReader</class>
+      <class>ManifestParser</class>
+    </file>
+  </registry>
 </manifest>
