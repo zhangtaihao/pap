@@ -20,7 +20,7 @@ final class Cache {
     $controller = Application::lookup('CacheController');
     if (!isset($controller)) {
       $controller = new CacheController();
-      Application::getInstance()->getStore()->store('CacheController', $controller);
+      Application::getApplication()->getStore()->store('CacheController', $controller);
     }
     return $controller;
   }

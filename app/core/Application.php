@@ -4,18 +4,34 @@
  * Core application components required to bootstrap a request.
  */
 
-if (!defined('DEFAULT_CONF_NAME')) {
+if (!defined('APPLICATION_CLASS')) {
+  /**
+   * Default application class name.
+   * @var string
+   */
+  define('APPLICATION_CLASS', 'DefaultApplication');
+}
+
+if (!defined('APPLICATION_CONTEXT_CLASS')) {
+  /**
+   * Default application context class name.
+   * @var string
+   */
+  define('APPLICATION_CONTEXT_CLASS', 'ApplicationContext');
+}
+
+if (!defined('CONF_NAME')) {
   /**
    * Default configuration name.
    * @var string
    */
-  define('DEFAULT_CONF_NAME', 'default');
+  define('CONF_NAME', 'default');
 }
 
 /**
- * Main application controller.
+ * Main application base class and controller.
  */
-class Application {
+abstract class Application {
   /**
    * Main application.
    * @var Application
@@ -23,119 +39,179 @@ class Application {
   protected static $application;
 
   /**
-   * Initializes the main application for a named handler. If an application
-   * has already been initialized, no new application will be created.
+   * Bootstraps the main application. If an application has already been
+   * initialized, no new application will be created.
    *
-   * @param string $handler
-   *   Name of the handler of this application.
-   * @param string $confName
-   *   Name of the configuration to load.
+   * @param array $bootOptions
+   *   Application bootstrap options, to be wrapped in a context before the
+   *   application object is constructed.
+   * @param string $applicationClass
+   *   Optional class name for the application to bootstrap. If none is given,
+   *   the default APPLICATION_CLASS is used.
    * @return Application
    *   Initialized application, ready to run.
    */
-  public static function init($handler, $confName = DEFAULT_CONF_NAME) {
+  public static function boot(array $bootOptions, $applicationClass = APPLICATION_CLASS) {
     if (!isset(self::$application)) {
       // Create application.
-      $application = new Application($handler, $confName);
+      $contextClass = APPLICATION_CONTEXT_CLASS;
+      $context = new $contextClass($bootOptions);
+      $application = new $applicationClass($context);
       self::$application = $application;
     }
     return self::$application;
   }
 
   /**
-   * Initializes and runs an application. See self::init() for parameters.
+   * Bootstraps and runs the main application.
+   *
+   * @param array $bootOptions
+   *   Application bootstrap options, to be wrapped in a context before the
+   *   application object is constructed.
+   * @param array $runOptions
+   *   Options for running an application, to be given to the run() method.
+   * @param string $applicationClass
+   *   Optional class name for the application to bootstrap. If none is given,
+   *   the default APPLICATION_CLASS is used.
+   * @return Application
+   *   Initialized application, ready to run.
    */
-  public static function initAndRun($handler, $confName = DEFAULT_CONF_NAME) {
-    $application = self::init($handler, $confName);
-    $application->run();
+  public static function bootAndRun(array $bootOptions, array $runOptions = array(), $applicationClass = APPLICATION_CLASS) {
+    $application = self::boot($bootOptions, $applicationClass);
+    $application->run($runOptions);
+    return $application;
   }
 
   /**
-   * Gets the initialized application.
+   * Gets the main application.
    *
    * @return Application
    *   Initialized application, if any.
    */
-  public static function getInstance() {
+  public static function getApplication() {
     return self::$application;
   }
 
   /**
-   * Looks up an object from the application store.
+   * Looks up a context from the application.
    *
    * @param string $name
    *   Name to look up.
-   * @return object
-   *   Object stored with the given name.
+   * @return Context|null
+   *   Context with the given name, or NULL if no such context was found.
    * @throws ApplicationNotInitializedException
    *   If there is no application instance.
    */
-  public static function lookup($name) {
-    if (!$application = self::getInstance()) {
+  public static function getContext($name) {
+    if (!$application = self::getApplication()) {
       throw new ApplicationNotInitializedException();
     }
-    return $application->getStore()->lookup($name);
+    return $application->getContexts()->getContext($name);
   }
 
   /**
    * Application-related contexts.
-   * @var Context[]
+   * @var Contexts
    */
   protected $contexts;
 
   /**
-   * Application object store.
-   * @var ApplicationStore
-   */
-  protected $store;
-
-  /**
-   * Constructs an application with the given handler.
+   * Constructs an application.
    *
-   * @param string $handler
-   *   Name of the handler to run.
-   * @param string $confName
-   *   Name of the configuration to load.
+   * @param ApplicationContext $context
+   *   Application context.
+   * @throws ApplicationInitializationException
+   *   If there is an error during initialization.
    */
-  protected function __construct($handler, $confName) {
-    $this->contexts = array();
-    $this->store = new ApplicationStore($this);
-
-    // Initialize application context.
-    $context = new ApplicationContext($this, $handler, $confName);
-    $this->addContext($context);
-
+  protected function __construct($context) {
+    $this->contexts = new Contexts();
+    // Add the application context.
+    $this->contexts->addContext($context);
     // Initialize main application components.
     $this->setUp();
   }
 
   /**
    * Sets up the application components.
+   *
+   * @throws ApplicationInitializationException
+   *   If there is an error during initialization.
+   */
+  protected function setUp() {}
+
+  /**
+   * Gets the application context store.
+   *
+   * @return Contexts
+   *   Context store.
+   */
+  public function getContexts() {
+    return $this->contexts;
+  }
+
+  /**
+   * Runs the application.
+   *
+   * @param array $runOptions
+   *   Options for running the application.
+   */
+  abstract public function run(array $runOptions);
+}
+
+/**
+ * Default application implementation.
+ */
+class DefaultApplication extends Application {
+  /**
+   * Bootstraps the default application.
    */
   protected function setUp() {
-    $store = $this->getStore();
+    parent::setUp();
+    $contexts = $this->getContexts();
 
     // Load the cache API for setup.
     require_once APP_ROOT . '/core/Cache.php';
 
     // Set up application registry.
     $registry = new ApplicationRegistry();
-    $store->store('ApplicationRegistry', $registry);
+    // TODO $store->store('ApplicationRegistry', $registry);
 
     // TODO Set up configuration.
-
-    // TODO Set up application handler.
-    //$application = new ApplicationHandler($handler, $context);
   }
 
   /**
-   * Adds a context object to this application.
+   * Runs the application.
+   *
+   * @param array $runOptions
+   *   Options for running the application.
+   */
+  public function run(array $runOptions) {
+    // TODO Set up application handler.
+    //$handler = new ApplicationHandler($handler, $context);
+
+    // TODO Run application handler.
+    //$handler->run();
+  }
+}
+
+/**
+ * Context store for managing and looking up contexts.
+ */
+final class Contexts {
+  /**
+   * Object store array.
+   * @var array
+   */
+  protected $store = array();
+
+  /**
+   * Adds a context object to the store.
    *
    * @param Context $context
    *   Context object.
    */
   public function addContext(Context $context) {
-    $this->contexts[$context->getContextName()] = $context;
+    $this->store[$context->getContextName()] = $context;
   }
 
   /**
@@ -147,93 +223,52 @@ class Application {
    *   Context object, or NULL if none found with the given name.
    */
   public function getContext($name) {
-    return isset($this->contexts[$name]) ? $this->contexts[$name] : NULL;
-  }
-
-  /**
-   * Gets the application store.
-   *
-   * @return ApplicationStore
-   *   Application store.
-   */
-  public function getStore() {
-    return $this->store;
-  }
-
-  /**
-   * Starts the main application.
-   *
-   * @param string $handler
-   *   Name of the handler to run.
-   */
-  public function run() {
-    // TODO Start application.
-    //$application->run();
+    return isset($this->store[$name]) ? $this->store[$name] : NULL;
   }
 }
 
 /**
- * Store for application-scope objects used during a request.
+ * Interface of objects as contexts.
  */
-class ApplicationStore {
+interface Context {
   /**
-   * Owner application
-   * @var Application
-   */
-  protected $application;
-
-  /**
-   * Object store array.
-   * @var array
-   */
-  protected $store;
-
-  /**
-   * Constructs a store.
+   * Gets a name of the context class for context registry.
    *
-   * @param Application $owner
-   *   Owner of this store.
+   * @return string
+   *   Context name.
    */
-  public function __construct(Application $owner) {
-    $this->application = $owner;
-    $this->store = array();
+  public function getContextName();
+}
+
+/**
+ * Application context containing initialization-time information.
+ */
+class ApplicationContext extends ArrayObject implements Context {
+  /**
+   * Gets a name of the context class for context registry.
+   *
+   * @return string
+   *   Context name.
+   */
+  public function getContextName() {
+    return 'application';
   }
 
   /**
-   * Gets the owner application.
+   * Constructs this application context.
    *
-   * @return Application
-   *   Application object.
+   * @param array $data
+   *   Application context data to encapsulate.
    */
-  public function getApplication() {
-    return $this->application;
+  public function __construct(array $data) {
+    parent::__construct($data, ArrayObject::ARRAY_AS_PROPS);
+    $this->setUpEnvironment();
   }
 
   /**
-   * Stores an object given a name, if it does not already exist.
-   *
-   * @param string $name
-   *   Name to store the object with.
-   * @param object $object
-   *   The object to store.
+   * Sets up environment variables.
    */
-  public function store($name, $object) {
-    if (!isset($this->store[$name])) {
-      $this->store[$name] = $object;
-    }
-  }
-
-  /**
-   * Retrieves an object by looking up its name.
-   *
-   * @param string $name
-   *   Name to look up.
-   * @return object
-   *   Object stored with the given name.
-   */
-  public function lookup($name) {
-    return isset($this->store[$name]) ? $this->store[$name] : NULL;
-  }
+  protected function setUpEnvironment() {}
 }
 
 /**
@@ -336,89 +371,9 @@ class ApplicationRegistry {
 class ApplicationNotInitializedException extends Exception {}
 
 /**
- * Abstract base class for contexts.
+ * Exception thrown during application initialization.
  */
-abstract class Context {
-  /**
-   * Gets a name of the context class for context registry.
-   *
-   * @return string
-   *   Context name.
-   */
-  abstract public function getContextName();
-}
-
-/**
- * Application context containing initialization-time information.
- */
-class ApplicationContext extends Context {
-  /**
-   * Application associated with this context.
-   * @var Application
-   */
-  protected $application;
-
-  /**
-   * Application handler name.
-   * @var string
-   */
-  protected $handler;
-
-  /**
-   * Configuration name.
-   * @var string
-   */
-  protected $confName;
-
-  /**
-   * Constructs this application context.
-   *
-   * @param Application $context
-   *   The owner of this application context.
-   * @param string $confName
-   *   Name of the configuration to load.
-   */
-  public function __construct(Application $owner, $handler, $confName) {
-    $this->application = $owner;
-    $this->handler = $handler;
-    $this->setUpEnvironment();
-  }
-
-  /**
-   * Sets up environment variables.
-   */
-  protected function setUpEnvironment() {}
-
-  /**
-   * Gets a name of the context class for context registry.
-   *
-   * @return string
-   *   Context name.
-   */
-  public function getContextName() {
-    return 'application';
-  }
-
-  /**
-   * Gets the associated application.
-   *
-   * @return Application
-   *   Application object.
-   */
-  public function getApplication() {
-    return $this->application;
-  }
-
-  /**
-   * Gets the application handler name.
-   *
-   * @return string
-   *   Name of the handler.
-   */
-  public function getHandler() {
-    return $this->handler;
-  }
-}
+class ApplicationInitializationException extends Exception {}
 
 /**
  * Generic application handler.
