@@ -1,7 +1,11 @@
 <?php
 /**
- * @file
  * Core application components required to bootstrap a request.
+ *
+ * @package     Application
+ * @subpackage  Core
+ * @author      Taihao Zhang <jason@zth.me>
+ * @license     GNU General Public License v3.0
  */
 
 if (!defined('APPLICATION_CLASS')) {

@@ -1,7 +1,11 @@
-  <?php
+<?php
 /**
- * @file
  * Default application initialization script.
+ *
+ * @package     Web
+ * @subpackage  Default
+ * @author      Taihao Zhang <jason@zth.me>
+ * @license     GNU General Public License v3.0
  */
 
 if (!defined('PLATFORM_ROOT')) {

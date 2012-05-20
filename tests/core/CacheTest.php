@@ -1,7 +1,11 @@
 <?php
 /**
- * @file
  * Caching API tests.
+ *
+ * @package     Tests
+ * @subpackage  Core
+ * @author      Taihao Zhang <jason@zth.me>
+ * @license     GNU General Public License v3.0
  */
 
 require_once APP_ROOT . '/core/Configuration.php';

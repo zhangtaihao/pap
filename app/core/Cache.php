@@ -1,7 +1,12 @@
 <?php
 /**
- * @file
  * Application caching API.
+ *
+ * @package     Application
+ * @subpackage  Core
+ * @category    Caching
+ * @author      Taihao Zhang <jason@zth.me>
+ * @license     GNU General Public License v3.0
  */
 
 /**

@@ -1,7 +1,11 @@
 <?php
 /**
- * @file
  * Architecture for configurable objects.
+ *
+ * @package     Application
+ * @subpackage  Core
+ * @author      Taihao Zhang <jason@zth.me>
+ * @license     GNU General Public License v3.0
  */
 
 /**

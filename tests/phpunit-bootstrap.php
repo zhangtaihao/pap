@@ -1,7 +1,10 @@
 <?php
 /**
- * @file
  * Bootstrap file for PHPUnit.
+ *
+ * @package     Tests
+ * @author      Taihao Zhang <jason@zth.me>
+ * @license     GNU General Public License v3.0
  */
 
 // Initialize default paths.

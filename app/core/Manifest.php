@@ -1,7 +1,11 @@
 <?php
 /**
- * @file
  * Manifest processing for providing consumable application information.
+ *
+ * @package     Application
+ * @subpackage  Core
+ * @author      Taihao Zhang <jason@zth.me>
+ * @license     GNU General Public License v3.0
  */
 
 /**
