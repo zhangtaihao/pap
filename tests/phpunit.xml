@@ -1,3 +1,0 @@
-<phpunit bootstrap="phpunit-bootstrap.php"
-         mapTestClassNameToCoveredClassName="true">
-</phpunit>
